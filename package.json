@@ -1,7 +1,7 @@
 {
   "name": "calc-app",
   "version": "0.1.0",
-  "main": "main.js",
+  "main": "app.js",
   "description": "CalcApp",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/disorn1/CalcApp/issues"
   },
-  "homepage": "https://github.com/disorn1/CalcApp#readme"
+  "homepage": "https://github.com/disorn1/CalcApp#readme",
+  "devDependencies": {
+    "jshint": "^2.9.5"
+  }
 }
