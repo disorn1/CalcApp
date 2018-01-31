@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/disorn1/CalcApp#readme",
   "devDependencies": {
+    "electron": "^1.7.11",
     "jshint": "^2.9.5"
-  }
+  },
+  "dependencies": {}
 }
