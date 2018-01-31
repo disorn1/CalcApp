@@ -1,0 +1,60 @@
+* {
+    background: white;
+}
+.panel {
+    padding: 10px;
+}
+
+.inputFieldBlock {
+    display: table;
+    width:100%;
+    margin-bottom: 15px;
+}
+
+.inputFieldBlock > p {
+    display: table-cell;
+    min-width: 20px;
+    width: 50px;
+    margin: 0px;
+}
+
+.inputFieldBlock > input {
+    display: table-cell;
+    max-width: 200px;
+    width:100%;
+}
+
+.operandBlock {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    margin-left: 50px;
+    display: table;
+}
+
+.operandBlock > input {
+    display: inline-block;
+    width: 35px;
+    height: 30px;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+input[type="button"] {
+    border: 1px solid #8b8b8b; 
+    color: #353535;
+}
+
+input[type="button"]:hover {
+    background-color: rgb(245, 245, 245);
+}
+
+.operandBlock > input.selected {
+    border: 3px solid black; 
+}
+
+.loadSaveBlock > input {
+    width: 100px;
+    height: 25px;
+    margin-left: 5px;
+    margin-top: 5px;
+}
