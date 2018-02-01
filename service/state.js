@@ -1,0 +1,33 @@
+var MongoClient = require('mongodb').MongoClient;
+
+var db = null;
+
+function connect(callback) {
+    MongoClient.connect("mongodb://localhost:27017/exampleDb", function(err, database) {
+      if(err) {
+        callback(err) ;
+        return; 
+      }
+      db = database;
+      callback(null);
+  });
+}
+
+function getStateCollection() {
+  return db.collection('state');
+}
+
+function getCalcStateByUsername(user, callback) {
+  getStateCollection().find({user:user}, callback);
+}
+
+function setCalcState(user, a, b, opr, callback) {
+  getStateCollection().update(
+    { user: user }, 
+    { user: user, a:a, b:b, opr:opr},
+    { upsert: true }, callback);
+}
+
+exports.getCalcStateByUsername = getCalcStateByUsername;
+exports.setCalcState = setCalcState;
+exports.connect = connect;
