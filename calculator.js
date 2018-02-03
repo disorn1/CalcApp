@@ -143,14 +143,9 @@ function save(calcState, callback) {
 }
 
 function load(user, callback) {
-    var headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-    };
-
     var options = {
         url: loadEndpoint,
         method: 'GET',
-        headers: headers,
         qs: {'user': user}
     };
 
