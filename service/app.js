@@ -17,12 +17,7 @@ app.get('/api/calcState', function(req, res) {
             } else {
                 response = errResponse(err.message ? err.message : err);
             }
-            try {
-                responseStr = JSON.stringify(response);
-                res.send(responseStr);
-            } catch (e){
-                errResponse("Sever error, " + e.message);
-            }
+            res.send(response);
         });
     } else {
         res.send(errResponse("No username"));
