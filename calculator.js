@@ -3,7 +3,7 @@ const fs = require('fs');
 const request = require('request');
 const {STATUS, CHANNEL, OPRS} = require('./calculator-model');
 
-const serviceHost = "35.227.54.205";
+const serviceHost = "35.229.57.112";
 const saveEndpoint = 'http://' + serviceHost + '/api/setCalcState';
 const loadEndpoint = 'http://' + serviceHost + '/api/calcState';
 
