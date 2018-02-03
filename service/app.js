@@ -7,7 +7,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 
 app.get('/api/calcState', function(req, res) {
-    var userName = req.param('user');
+    var userName = req.query.user;
     var response;
     if (userName) {
         state.getCalcStateByUsername(userName, (err, document) => {
