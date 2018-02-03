@@ -1,15 +1,16 @@
-var app = require('express');
+var express = require('express');
 var state = require('./state');
 var bodyParser = require('body-parser');
 
-app.use( bodyParser.json() );       
+const app = express();
+app.use(bodyParser.json());       
 app.use(bodyParser.urlencoded({ extended: true })); 
 
 app.get('/api/calcState', function(req, res) {
     var userName = req.param('user');
     var response;
     if (userName) {
-        state.getCalcStateByUsername(user, (err, document) => {
+        state.getCalcStateByUsername(userName, (err, document) => {
             var response;
             if (!err) {
                 response = successResponse(document);
@@ -45,7 +46,13 @@ app.post('/api/setCalcState', function(req, res) {
         if (opr === null || opr === undefined) {
             opr = null;
         }
-        state.setCalcState(user, aInput, bInput, opr);
+        state.setCalcState(user, aInput, bInput, opr, (err, result) => {
+            if (err) {
+                res.send(errResponse(err));
+            } else {
+                res.send(successResponse(result));
+            }
+        });
     } else {
         res.send(errResponse("No username"));
     }
@@ -59,15 +66,25 @@ function successResponse(data) {
     var res = {
         status: 'OK',
         data: data
-    }
+    };
     return res;
 }
 function errResponse(message) {
     var res = {
         status: 'NOK',
         message: message
-    }
+    };
     return res;
 }
 
+function startServer() {
+    const server = app.listen(80, () => {
+        var host = server.address().address;
+        var port = server.address().port;
+        console.log(("  App is running at listening at http://%s:%s"), host, port);
+        console.log("  Press CTRL-C to stop\n");
+    });
+}
+
 exports.initializeDB = initializeDB;
+exports.startServer = startServer;

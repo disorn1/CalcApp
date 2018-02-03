@@ -12,6 +12,7 @@ var powButton = document.getElementById("powButton");
 var loadButton = document.getElementById("loadButton");
 var saveButton = document.getElementById("saveButton");
 var resultInputField = document.getElementById("resultInputField");
+var userInputField = document.getElementById("userInputField");
 
 var currentOperator;
 
@@ -26,31 +27,26 @@ function onCmdButtonClick(event) {
 }
 
 function onSaveButtonClick() {
-    dialog.showSaveDialog(options= {
-        title: "Save calculation",
-        filters: [{name: 'Calculation file', extensions: ['cal']}]
-    }, callback= (filename) => {
-        if (filename) {
-            var calState = {
-                a: aInputField.value,
-                b: bInputField.value,
-                opr: currentOperator
-            };
-            ipcRenderer.send(CHANNEL.SAVE, calState, filename);
-        }
-    });
+    if (userInputField.value) {
+        var calState = {
+            user: userInputField.value,
+            a: aInputField.value,
+            b: bInputField.value,
+            opr: currentOperator
+        };
+        ipcRenderer.send(CHANNEL.SAVE, calState);
+        
+    } else {
+        dialog.showErrorBox('Save', 'Please enter username');
+    }
 }
 
 function onLoadButtonClick() {
-    dialog.showOpenDialog(options={
-        title: "Load calculation",
-        filters: [{name: 'Calculation file', extensions: ['cal']}],
-        properties: ["openFile"]
-    }, callback= (filePaths) => {
-        if (filePaths && filePaths.length > 0) {
-            ipcRenderer.send(CHANNEL.LOAD, filePaths[0]);
-        }
-    });
+    if (userInputField.value) {
+        ipcRenderer.send(CHANNEL.LOAD, userInputField.value);
+    } else {
+        dialog.showErrorBox('Load', 'Please enter username');
+    }
 }
 
 function clearOperandHighlight() {
@@ -95,6 +91,12 @@ ipcRenderer.on(CHANNEL.CALCULATE_REPLY, (event, data) => {
 ipcRenderer.on(CHANNEL.SAVE_REPLY, (event, data) => {
     if (data.status === STATUS.NOK) {
         dialog.showErrorBox('Save failed', data.message);
+    } else {
+        dialog.showMessageBox({
+            type: 'info',
+            title: 'Save',
+            message: 'Saved successfully'
+        });
     }
 });
 
@@ -108,6 +110,11 @@ ipcRenderer.on(CHANNEL.LOAD_REPLY, (event, data) => {
             resultInputField.value = '';
             clearOperandHighlight();
         }
+        dialog.showMessageBox({
+            type: 'info',
+            title: 'Load',
+            message: 'Loaded successfully'
+        });
     } else {
         dialog.showErrorBox('Load failed', data.message);
     }

@@ -52,7 +52,16 @@ input[type="button"]:hover {
     border: 3px solid black; 
 }
 
+.loadSaveBlock > p {
+    display: inline-block;
+    height: 25px;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+
 .loadSaveBlock > input {
+    display: inline-block;
     width: 100px;
     height: 25px;
     margin-left: 5px;
