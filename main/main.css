@@ -18,6 +18,10 @@
     margin: 0px;
 }
 
+.cloudDriveBlock {
+    display: inline;
+}
+
 .inputFieldBlock > input {
     display: table-cell;
     max-width: 200px;
@@ -52,14 +56,18 @@ input[type="button"]:hover {
     border: 3px solid black; 
 }
 
-.loadSaveBlock > p {
+.loadSaveBlock div {
+    display: inline-block;
+}
+
+.loadSaveBlock p {
     display: inline-block;
     height: 25px;
     margin-left: 5px;
     margin-top: 5px;
 }
 
-.loadSaveBlock > input {
+.loadSaveBlock input {
     display: inline-block;
     width: 100px;
     height: 25px;
@@ -69,4 +77,8 @@ input[type="button"]:hover {
 
 .hide-loading {
     display: none;
+}
+
+.hide {
+    visibility: hidden;
 }

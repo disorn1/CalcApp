@@ -6,7 +6,11 @@ const CHANNEL = {
     SAVE: 'save',
     SAVE_REPLY: 'save_reply',
     LOAD: 'load',
-    LOAD_REPLY: 'load_reply'
+    LOAD_REPLY: 'load_reply',
+    SAVE_CLOUD: 'save_cloud',
+    SAVE_CLOUD_REPLY: 'save_cloud_reply',
+    LOAD_CLOUD: 'load_cloud',
+    LOAD_CLOUD_REPLY: 'load_cloud_reply'
 };
 
 const OPRS = {

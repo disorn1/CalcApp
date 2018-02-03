@@ -1,4 +1,5 @@
 const {ipcMain} = require('electron');
+const fs = require('fs');
 const request = require('request');
 const {STATUS, CHANNEL, OPRS} = require('./calculator-model');
 
@@ -21,8 +22,8 @@ ipcMain.on(CHANNEL.CALCULATE, (event, a, b, opr) => {
     }
 });
 
-ipcMain.on(CHANNEL.SAVE, (event, calState) => {
-    save(calState, (err) => {
+ipcMain.on(CHANNEL.SAVE, (event, calState, filename) => {
+    save(calState, filename, (err) => {
         if (err) {
             event.sender.send(CHANNEL.SAVE_REPLY,{
                 status: STATUS.NOK,
@@ -31,14 +32,14 @@ ipcMain.on(CHANNEL.SAVE, (event, calState) => {
         } else {
             event.sender.send(CHANNEL.SAVE_REPLY, {
                 status: STATUS.OK,
-                result: calState
+                result: filename
             });
         }
     });
 });
 
-ipcMain.on(CHANNEL.LOAD, (event, user) => {
-    load(user, (err, data) => {
+ipcMain.on(CHANNEL.LOAD, (event, filename) => {
+    load(filename, (err, data) => {
         if (!err) {
             validateLoadInput(data);
             event.sender.send(CHANNEL.LOAD_REPLY, {
@@ -47,6 +48,39 @@ ipcMain.on(CHANNEL.LOAD, (event, user) => {
             });
         } else {
             event.sender.send(CHANNEL.LOAD_REPLY,{
+                status: STATUS.NOK,
+                message: errMsg(err)
+            });
+        }
+    });
+});
+
+ipcMain.on(CHANNEL.SAVE_CLOUD, (event, calState) => {
+    saveCloud(calState, (err) => {
+        if (err) {
+            event.sender.send(CHANNEL.SAVE_CLOUD_REPLY,{
+                status: STATUS.NOK,
+                message: errMsg(err)
+            });
+        } else {
+            event.sender.send(CHANNEL.SAVE_CLOUD_REPLY, {
+                status: STATUS.OK,
+                result: calState
+            });
+        }
+    });
+});
+
+ipcMain.on(CHANNEL.LOAD_CLOUD, (event, user) => {
+    loadCloud(user, (err, data) => {
+        if (!err) {
+            validateLoadInput(data);
+            event.sender.send(CHANNEL.LOAD_CLOUD_REPLY, {
+                status: STATUS.OK,
+                result: data
+            });
+        } else {
+            event.sender.send(CHANNEL.LOAD_CLOUD_REPLY,{
                 status: STATUS.NOK,
                 message: errMsg(err)
             });
@@ -101,7 +135,7 @@ function calculate(a, b, opr) {
     return result;
 }
 
-function save(calcState, callback) {
+function saveCloud(calcState, callback) {
     var headers = {
         'Content-Type': 'application/json'
     };
@@ -142,7 +176,7 @@ function save(calcState, callback) {
     });
 }
 
-function load(user, callback) {
+function loadCloud(user, callback) {
     var options = {
         url: loadEndpoint,
         method: 'GET',
@@ -173,6 +207,31 @@ function load(user, callback) {
             }
             else if (response) {
                 callback(null, 'Server returned: ' + response.statusCode + ": " + response.statusMessage);
+            }
+        }
+    });
+}
+
+function save(calcState, filename, callback) {
+    try {
+        var serializedCalcState = JSON.stringify(calcState);
+        fs.writeFile(filename, serializedCalcState, callback);
+    } catch (e) {
+        callback(e);
+    }
+}
+
+function load(filename, callback) {
+    fs.readFile(filename, function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            try {
+                obj = JSON.parse(data);
+                callback(err=undefined, data=obj);
+            }
+            catch (e) {
+                callback(e);
             }
         }
     });

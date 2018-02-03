@@ -12,6 +12,8 @@ var powButton = document.getElementById("powButton");
 var loadButton = document.getElementById("loadButton");
 var saveButton = document.getElementById("saveButton");
 var resultInputField = document.getElementById("resultInputField");
+var cloudDriveInput = document.getElementById("cloudDriveInput");
+var userInputSection = document.getElementById("userInputSection");
 var userInputField = document.getElementById("userInputField");
 var loadingSection = document.getElementById("loadingSection");
 var loadSaveSection = document.getElementById("loadSaveSection");
@@ -28,7 +30,59 @@ function onCmdButtonClick(event) {
     }
 }
 
+function onCloudDriveCheckboxClick() {
+    if (cloudDriveInput.checked) {
+        userInputSection.classList.remove('hide');
+    } else {
+        userInputSection.classList.add('hide');
+    }
+}
+
 function onSaveButtonClick() {
+    if (cloudDriveInput.checked) {
+        saveCloud();
+    } else {
+        save();
+    }
+}
+
+function onLoadButtonClick() {
+    if (cloudDriveInput.checked) {
+        loadCloud();
+    } else {
+        load();
+    }
+}
+
+function save() {
+    dialog.showSaveDialog(options= {
+        title: "Save calculation",
+        filters: [{name: 'Calculation file', extensions: ['cal']}]
+    }, callback= (filename) => {
+        if (filename) {
+            var calState = {
+                a: aInputField.value,
+                b: bInputField.value,
+                opr: currentOperator
+            };
+            ipcRenderer.send(CHANNEL.SAVE, calState, filename);
+        }
+    });
+}
+
+function load() {
+    dialog.showOpenDialog(options={
+        title: "Load calculation",
+        filters: [{name: 'Calculation file', extensions: ['cal']}],
+        properties: ["openFile"]
+    }, callback= (filePaths) => {
+        if (filePaths && filePaths.length > 0) {
+            ipcRenderer.send(CHANNEL.LOAD, filePaths[0]);
+        }
+    });
+}
+
+function saveCloud() {
     if (userInputField.value) {
         var calState = {
             user: userInputField.value,
@@ -37,20 +91,25 @@ function onSaveButtonClick() {
             opr: currentOperator
         };
         showLoading();
-        ipcRenderer.send(CHANNEL.SAVE, calState);
+        ipcRenderer.send(CHANNEL.SAVE_CLOUD, calState);
         
     } else {
         dialog.showErrorBox('Save', 'Please enter username');
     }
 }
 
-function onLoadButtonClick() {
+function loadCloud() {
     if (userInputField.value) {
         showLoading();
-        ipcRenderer.send(CHANNEL.LOAD, userInputField.value);
+        ipcRenderer.send(CHANNEL.LOAD_CLOUD, userInputField.value);
     } else {
         dialog.showErrorBox('Load', 'Please enter username');
     }
+}
+
+function clearCalculationResult() {
+    resultInputField.value = '';
+    clearOperandHighlight();
 }
 
 function clearOperandHighlight() {
@@ -105,6 +164,26 @@ ipcRenderer.on(CHANNEL.CALCULATE_REPLY, (event, data) => {
 ipcRenderer.on(CHANNEL.SAVE_REPLY, (event, data) => {
     if (data.status === STATUS.NOK) {
         dialog.showErrorBox('Save failed', data.message);
+    }
+});
+
+ipcRenderer.on(CHANNEL.LOAD_REPLY, (event, data) => {
+    if (data.status === STATUS.OK) {
+        aInputField.value = data.result.a != null ? data.result.a : '';
+        bInputField.value = data.result.b != null ? data.result.b : '';
+        if (data.result.opr && setOperandHighlight(data.result.opr) && aInputField.value && bInputField.value) {
+            ipcRenderer.send(CHANNEL.CALCULATE, aInputField.value, bInputField.value, data.result.opr); 
+        } else {
+            clearCalculationResult();
+        }
+    } else {
+        dialog.showErrorBox('Load failed', data.message);
+    }
+});
+
+ipcRenderer.on(CHANNEL.SAVE_CLOUD_REPLY, (event, data) => {
+    if (data.status === STATUS.NOK) {
+        dialog.showErrorBox('Save failed', data.message);
     } else {
         dialog.showMessageBox({
             type: 'info',
@@ -115,7 +194,7 @@ ipcRenderer.on(CHANNEL.SAVE_REPLY, (event, data) => {
     hideLoading();
 });
 
-ipcRenderer.on(CHANNEL.LOAD_REPLY, (event, data) => {
+ipcRenderer.on(CHANNEL.LOAD_CLOUD_REPLY, (event, data) => {
     if (data.status === STATUS.OK) {
         aInputField.value = data.result.a != null ? data.result.a : '';
         bInputField.value = data.result.b != null ? data.result.b : '';
@@ -143,3 +222,6 @@ divButton.addEventListener('click', onCmdButtonClick);
 powButton.addEventListener('click', onCmdButtonClick);
 saveButton.addEventListener('click', onSaveButtonClick);
 loadButton.addEventListener('click', onLoadButtonClick);
+aInputField.addEventListener('change', clearCalculationResult);
+bInputField.addEventListener('change', clearCalculationResult);
+cloudDriveInput.addEventListener('click', onCloudDriveCheckboxClick);

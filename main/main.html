@@ -28,9 +28,14 @@
             <p>Result</p>
             <input id="resultInputField" type="text" readonly>
         </div>
+        <div class="cloudDriveBlock">
+            <input id="cloudDriveInput" type="checkbox">Cloud Drive<br>
+        </div>
         <div id="loadSaveSection" class="loadSaveBlock">
-            <p>User</p>
-            <input id="userInputField" type="text">
+            <div id="userInputSection" class="hide">
+                <p>User</p>
+                <input id="userInputField" type="text">
+            </div>
             <input id="loadButton" type="button" value="Load">
             <input id="saveButton" type="button" value="Save">
         </div>
