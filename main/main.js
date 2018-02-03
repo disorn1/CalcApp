@@ -13,6 +13,8 @@ var loadButton = document.getElementById("loadButton");
 var saveButton = document.getElementById("saveButton");
 var resultInputField = document.getElementById("resultInputField");
 var userInputField = document.getElementById("userInputField");
+var loadingSection = document.getElementById("loadingSection");
+var loadSaveSection = document.getElementById("loadSaveSection");
 
 var currentOperator;
 
@@ -34,6 +36,7 @@ function onSaveButtonClick() {
             b: bInputField.value,
             opr: currentOperator
         };
+        showLoading();
         ipcRenderer.send(CHANNEL.SAVE, calState);
         
     } else {
@@ -43,6 +46,7 @@ function onSaveButtonClick() {
 
 function onLoadButtonClick() {
     if (userInputField.value) {
+        showLoading();
         ipcRenderer.send(CHANNEL.LOAD, userInputField.value);
     } else {
         dialog.showErrorBox('Load', 'Please enter username');
@@ -78,6 +82,16 @@ function setOperandHighlight(opr) {
     }
 }
 
+function showLoading() {
+    loadSaveSection.classList.add('hide-loading');
+    loadingSection.classList.remove('hide-loading');
+}
+
+function hideLoading() {
+    loadSaveSection.classList.remove('hide-loading');
+    loadingSection.classList.add('hide-loading');
+}
+
 ipcRenderer.on(CHANNEL.CALCULATE_REPLY, (event, data) => {
     if (data.status === STATUS.OK) {
         resultInputField.value = data.result;
@@ -98,6 +112,7 @@ ipcRenderer.on(CHANNEL.SAVE_REPLY, (event, data) => {
             message: 'Saved successfully'
         });
     }
+    hideLoading();
 });
 
 ipcRenderer.on(CHANNEL.LOAD_REPLY, (event, data) => {
@@ -118,6 +133,7 @@ ipcRenderer.on(CHANNEL.LOAD_REPLY, (event, data) => {
     } else {
         dialog.showErrorBox('Load failed', data.message);
     }
+    hideLoading();
 });
 
 addButton.addEventListener('click', onCmdButtonClick);

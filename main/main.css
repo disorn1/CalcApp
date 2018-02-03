@@ -59,11 +59,14 @@ input[type="button"]:hover {
     margin-top: 5px;
 }
 
-
 .loadSaveBlock > input {
     display: inline-block;
     width: 100px;
     height: 25px;
     margin-left: 5px;
     margin-top: 5px;
+}
+
+.hide-loading {
+    display: none;
 }
