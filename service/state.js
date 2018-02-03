@@ -1,10 +1,11 @@
-var MongoClient = require('mongodb').MongoClient;
-var Server = require('mongodb').Server;
+const MongoClient = require('mongodb').MongoClient;
+const Server = require('mongodb').Server;
+const MongoUri = "mongodb://localhost:27017/";
 
 var db = null;
 
 function connect(callback) {
-    MongoClient.connect("mongodb://localhost:27017/", function(err, database) {
+    MongoClient.connect(MongoUri, function(err, database) {
       if(err) {
         callback(err) ;
         return; 
